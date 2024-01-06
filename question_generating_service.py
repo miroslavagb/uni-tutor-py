@@ -1,5 +1,4 @@
 import os
-
 from open_ai.service_facade import OpenAIServiceFacade
 
 QUESTION_GENERATING_ASSISTANT = os.getenv('QUESTION_GENERATING_ASSISTANT')
