@@ -1,9 +1,5 @@
 import os
-
-from dotenv import load_dotenv
 from openai import OpenAI
-
-load_dotenv('app_variables.env')
 
 
 class OpenAIClient:
