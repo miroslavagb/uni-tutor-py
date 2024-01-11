@@ -3,19 +3,25 @@ import logging
 from dotenv import load_dotenv
 from flask import Flask
 
+load_dotenv(dotenv_path='app_variables.env', verbose=True)
+
+
+from db_models import initiate_database
+from file_uploading_api import file_uploading_blueprint
 from question_answering_api import question_answering_blueprint
 from question_generating_api import question_generating_blueprint
 
-load_dotenv('app_variables.env')
-
 
 def create_app():
-    return Flask(__name__)
+    flask_app = Flask(__name__)
+    flask_app.register_blueprint(question_generating_blueprint)
+    flask_app.register_blueprint(question_answering_blueprint)
+    flask_app.register_blueprint(file_uploading_blueprint)
+    return flask_app
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     app = create_app()
-    app.register_blueprint(question_generating_blueprint, url_prefix='/generate')
-    app.register_blueprint(question_answering_blueprint, url_prefix='/answer')
+    initiate_database()
     app.run(debug=True)

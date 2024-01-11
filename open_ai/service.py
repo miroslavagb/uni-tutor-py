@@ -31,3 +31,6 @@ class OpenAIService:
 
     def list_messages(self, thread_id):
         return self.client.beta.threads.messages.list(thread_id=thread_id)
+
+    def create_file(self, file):
+        return self.client.files.create(file=file, purpose="assistants")
