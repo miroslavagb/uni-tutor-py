@@ -8,7 +8,7 @@ test_evaluation_blueprint = Blueprint('test_evaluation', __name__)
 @test_evaluation_blueprint.route('/evaluate', methods=['POST'])
 def evaluate_test():
     user_answers = request.json.get(
-        'answers')  # assuming the format {"answers": [{"question_id": "..", "option_id": ".."}, ...]}
+        'answers')  # TODO {"answers": [{"question_id": "..", "option_id": ".."}, ...]}
 
     with Session(engine) as session:
         incorrect_answers = []
@@ -22,6 +22,7 @@ def evaluate_test():
                     "question_id": question.id,
                     "question_title": question.title,
                     "answer_description": question.answer_description
+                    # TODO: Add selected_option and the correct option itself. + Question Difficulty?
                 })
 
     return jsonify({"incorrect_answers": incorrect_answers})

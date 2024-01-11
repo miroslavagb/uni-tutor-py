@@ -14,8 +14,7 @@ def upload_file():
 
         file = request.files['file']
 
-        # If the user does not select a file, the browser submits an
-        # empty file without a filename.
+        # Common browser error (names empty file if no file is selected)
         if file.filename == '':
             return redirect(request.url)
 

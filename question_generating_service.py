@@ -10,7 +10,7 @@ openai_facade = OpenAIServiceFacade()
 
 
 def generate_questions(question_count, file_ids):
-    content = f"Generate {question_count} questions about the file: EN_Business-Guide-2020_English_web.pdf"
+    content = f"Generate {question_count} questions about the file attached"
     logging.info(f"Sending prompt with content: {content}")
     questions = openai_facade.execute_run(content=content, assistant_id=QUESTION_GENERATING_ASSISTANT,
                                           file_ids=file_ids)
@@ -37,7 +37,6 @@ def generate_questions(question_count, file_ids):
             session.add(question)
             session.flush()  # This will assign an ID to the question and its options
 
-            # Construct the response format
             response_question = {
                 "id": question.id,
                 "title": question.title,
@@ -47,6 +46,5 @@ def generate_questions(question_count, file_ids):
 
         session.commit()
 
-        # Return the formatted questions
     return {"questions": response_questions}
 
