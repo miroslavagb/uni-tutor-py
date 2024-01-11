@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from db_models import Question, Option, engine
+from db.db_models import Question, Option, engine
 from sqlalchemy.orm import Session
 
 test_evaluation_blueprint = Blueprint('test_evaluation', __name__)

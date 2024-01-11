@@ -1,7 +1,7 @@
 import logging
 import os
 
-from db_models import engine, Question, Option
+from db.db_models import engine, Question, Option
 from open_ai.service_facade import OpenAIServiceFacade
 from sqlalchemy.orm import Session
 
