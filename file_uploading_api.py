@@ -36,6 +36,7 @@ def upload_file():
                 'status': file_response.status,
                 'status_details': file_response.status_details
             }
+            # TODO: Save to database, map user to file uploaded
 
             return jsonify({'data': file_response_dict})
     except Exception as e:

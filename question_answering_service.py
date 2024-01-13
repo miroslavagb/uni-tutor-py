@@ -8,5 +8,25 @@ openai_facade = OpenAIServiceFacade()
 def answer_question(question, file_ids):
     answer = openai_facade.execute_run(content=question, assistant_id=QUESTION_ANSWERING_ASSISTANT,
                                        file_ids=file_ids)
-    # TODO: Parse answer to some understandable format (Currently will return the whole response object)
-    return answer
+    serialized_answer = serialize_thread_messages(answer)
+    return serialized_answer
+
+
+def serialize_thread_messages(sync_cursor_page):
+    serialized_data = []
+    for thread_message in sync_cursor_page.data:
+        concatenated_values = ''
+        for content in thread_message.content:
+            if hasattr(content, 'text') and hasattr(content.text, 'value'):
+                concatenated_values += content.text.value + ' '
+
+        message_info = {
+            'id': thread_message.id,
+            'content': concatenated_values.strip(),
+            # TODO: Add other fields as needed
+        }
+        serialized_data.append(message_info)
+
+    return serialized_data
+
+

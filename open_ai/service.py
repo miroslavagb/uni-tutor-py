@@ -15,8 +15,7 @@ class OpenAIService:
             "content": content
         }
         if file_ids:
-            message_data["file_ids"] = file_ids
-
+            message_data["file_ids"] = [file_ids]
         return self.client.beta.threads.messages.create(**message_data)
 
     def create_run(self, thread_id, assistant_id=None):
