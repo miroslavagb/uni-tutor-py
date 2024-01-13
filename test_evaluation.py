@@ -25,4 +25,6 @@ def evaluate_test():
                     # TODO: Add selected_option and the correct option itself. + Question Difficulty?
                 })
 
+                # TODO: [OPTIONAL] Apply GPT feedback/report based on answers provided by user
+
     return jsonify({"incorrect_answers": incorrect_answers})
