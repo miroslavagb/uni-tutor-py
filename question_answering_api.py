@@ -11,7 +11,7 @@ def answer_question(file_id):
     try:
         question = request.data.decode('utf-8')
         logging.info(f"Received question for file: '{file_id}'. Question: {question}")
-        answer = question_answering_service.answer_question(question, file_id)
+        answer = question_answering_service.answer_question(question, [file_id])  # FIXME: correct list file_ids
         return jsonify({'data': answer})
     except Exception as e:
         logging.error(f"Error occurred during answering a question: {e}")

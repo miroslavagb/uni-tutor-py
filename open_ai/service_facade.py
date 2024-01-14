@@ -13,7 +13,13 @@ class OpenAIServiceFacade:
         self.openai_services = OpenAIService()
 
     def execute_run(self, content, file_ids=None, assistant_id=None):
-        # Create a new thread
+
+        # TODO: Reuse threads: when answering questions for the same book and same user or when
+        # generating questions for one book (I am not even sure if the user should be the same - it has both pros
+        # and cons)
+
+        #TODO: Also if it's one thread make sure that no thread messages before my message are fetched or processed on server side
+
         thread = self.openai_services.create_thread()
 
         # Send a message to the thread (with or without file IDs)

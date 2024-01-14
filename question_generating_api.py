@@ -1,3 +1,5 @@
+import logging
+
 from flask import Blueprint, jsonify, request
 import question_generating_service
 
@@ -11,4 +13,5 @@ def generate_questions(question_count):
         questions = question_generating_service.generate_questions(question_count, file_ids)
         return jsonify({'data': questions})
     except Exception as e:
+        logging.error(f"Error occurred during generating questions: {e}")
         return jsonify({'error': str(e)}), 500

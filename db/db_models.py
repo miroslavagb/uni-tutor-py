@@ -1,23 +1,15 @@
 import os
-from enum import Enum
-from typing import List
-
-from sqlalchemy import ForeignKey
-from sqlalchemy import String
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
+from sqlalchemy import create_engine, Column, String, Integer, ForeignKey, Boolean, Enum
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from sqlalchemy import create_engine
+from enum import Enum as PyEnum
 
 engine = create_engine(os.getenv('DATABASE_URL'), echo=True)
 
-
-class Base(DeclarativeBase):
-    pass
+Base = declarative_base()
 
 
-class Difficulty(Enum):
+class Difficulty(PyEnum): #FIXME: Cannot configure it properly, will fix later
     easy = 1
     medium = 2
     hard = 3
@@ -25,22 +17,22 @@ class Difficulty(Enum):
 
 class Question(Base):
     __tablename__ = "generated_questions"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(500))
-    difficulty: Mapped[Difficulty]
-    answer_description: Mapped[str] = mapped_column(String(500))
-    options: Mapped[List["Option"]] = relationship(
-        back_populates="question", cascade="all, delete-orphan"
-    )
+    id = Column(Integer, primary_key=True)
+    title = Column(String(500))
+    difficulty = Column(String(50))
+    answer_description = Column(String(500))
+    source_page = Column(String(500))  # New field to store source page reference
+    options = relationship("Option", back_populates="question", cascade="all, delete-orphan")
 
 
 class Option(Base):
     __tablename__ = "options"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(500))
-    is_correct: Mapped[bool]
-    question_id: Mapped[int] = mapped_column(ForeignKey("generated_questions.id"))
-    question: Mapped["Question"] = relationship(back_populates="options")
+    id = Column(Integer, primary_key=True)
+    key = Column(String(50))  # To store the option key like 'a', 'b', etc.
+    value = Column(String(500))  # To store the option text
+    is_correct = Column(Boolean)
+    question_id = Column(Integer, ForeignKey("generated_questions.id"))
+    question = relationship("Question", back_populates="options")
 
 
 def initiate_database():
