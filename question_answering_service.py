@@ -9,7 +9,7 @@ def answer_question(question, file_ids):
     answer = openai_facade.execute_run(content=question, assistant_id=QUESTION_ANSWERING_ASSISTANT,
                                        file_ids=file_ids)
     serialized_answer = serialize_thread_messages(answer)
-    return serialized_answer
+    return serialized_answer[0]
 
 
 def serialize_thread_messages(sync_cursor_page):
