@@ -10,7 +10,10 @@ question_generating_blueprint = Blueprint('question_generating', __name__)
 def generate_questions(question_count):
     try:
         file_ids = request.args.getlist('file_id')
-        questions = question_generating_service.generate_questions(question_count, file_ids)
+        additional_prompt = request.form.get('prompt', '')
+        question_theme = request.form['theme']
+        questions = question_generating_service.generate_questions(question_count, file_ids, question_theme,
+                                                                   additional_prompt)
         return jsonify({'data': questions})
     except Exception as e:
         logging.error(f"Error occurred during generating questions: {e}")

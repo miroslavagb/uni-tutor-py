@@ -13,6 +13,7 @@ from file_uploading_api import file_uploading_blueprint
 from question_answering_api import question_answering_blueprint
 from question_generating_api import question_generating_blueprint
 from test_evaluation import test_evaluation_blueprint
+from authentication_api import registration_blueprint, login_blueprint, logout_blueprint
 
 
 def create_app():
@@ -21,6 +22,9 @@ def create_app():
     flask_app.register_blueprint(question_answering_blueprint)
     flask_app.register_blueprint(file_uploading_blueprint)
     flask_app.register_blueprint(test_evaluation_blueprint)
+    flask_app.register_blueprint(registration_blueprint)
+    flask_app.register_blueprint(login_blueprint)
+    flask_app.register_blueprint(logout_blueprint)
     return flask_app
 
 

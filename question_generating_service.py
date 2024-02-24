@@ -11,8 +11,12 @@ openai_facade = OpenAIServiceFacade()
 
 # TODO If I have question generating assistant, and then I fetch the questions in string format and pass them to a second "String to JSON coverter" assistant. ?
 
-def generate_questions(question_count, file_ids):
-    content = f"Generate {question_count} new questions about starting a business in Sofia in desired JSON format. Re-read the critical note attached to the assistant. Please send only the JSON payload and not write it in human-readable format as it will be processed by Python service only, no human will read it. I also don't need any additional explanaitions except the JSON. Make sure it's in the right format, as specified in the instructions. PLEASE PLEASE PLEASE, don't write anything else and don't print the questions in human-readable format, ONLY JSON BABY"
+def generate_questions(question_count, file_ids, question_theme, additional_prompt):
+    content = (f"Generate {question_count} new questions about {question_theme}. Return "
+               f"response only in the desired JSON format. (generatedQuestions list). IMPORTANT NOTE: Generate a "
+               f"'generatedQuestions' json response and don't respond with any other additional word. "
+               f"{additional_prompt}")
+
     logging.info(f"Sending prompt with content: {content}")
     questions = openai_facade.execute_run(content=content, assistant_id=QUESTION_GENERATING_ASSISTANT,
                                           file_ids=file_ids)
