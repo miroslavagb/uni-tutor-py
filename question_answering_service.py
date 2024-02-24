@@ -1,3 +1,4 @@
+import logging
 import os
 from open_ai.service_facade import OpenAIServiceFacade
 
@@ -20,6 +21,7 @@ def serialize_thread_messages(sync_cursor_page):
             if hasattr(content, 'text') and hasattr(content.text, 'value'):
                 concatenated_values += content.text.value + ' '
 
+        logging.info(f"THREAD: {thread_message}")
         message_info = {
             'id': thread_message.id,
             'content': concatenated_values.strip(),

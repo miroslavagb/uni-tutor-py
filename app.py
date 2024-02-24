@@ -10,7 +10,7 @@ load_dotenv(dotenv_path='app_variables.env', verbose=True)
 
 from db.db_models import initiate_database
 from file_uploading_api import file_uploading_blueprint
-from question_answering_api import question_answering_blueprint
+from question_answering_api import question_answering_blueprint, messages_history_blueprint
 from question_generating_api import question_generating_blueprint
 from test_evaluation import test_evaluation_blueprint
 from authentication_api import registration_blueprint, login_blueprint, logout_blueprint
@@ -25,6 +25,7 @@ def create_app():
     flask_app.register_blueprint(registration_blueprint)
     flask_app.register_blueprint(login_blueprint)
     flask_app.register_blueprint(logout_blueprint)
+    flask_app.register_blueprint(messages_history_blueprint)
     return flask_app
 
 

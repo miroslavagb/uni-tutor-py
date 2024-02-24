@@ -18,6 +18,7 @@ class User(Base):
     name = Column(String(100), nullable=False)
     password_hash = Column(String(500), nullable=False)
     files = relationship("File", back_populates="user", cascade="all, delete-orphan")
+    messages = relationship("MessagesHistory", back_populates="user", cascade="all, delete-orphan")
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -34,6 +35,18 @@ class File(Base):
     status = Column(String(50))
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("User", back_populates="files")
+
+
+class MessagesHistory(Base):
+    __tablename__ = "messages_history"
+    id = Column(Integer, primary_key=True)
+    question = Column(String(1500))
+    content = Column(String(1500))
+    open_ai_msg_id = Column(String(100))
+    file_id = Column(Integer, ForeignKey("files.id"))
+    file = relationship("File")
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("User", back_populates="messages")
 
 
 class Difficulty(PyEnum):  # FIXME: Cannot configure it properly, will fix later
