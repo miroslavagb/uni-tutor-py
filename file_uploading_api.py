@@ -10,6 +10,7 @@ from open_ai.service import OpenAIService
 
 openai_service = OpenAIService()
 file_uploading_blueprint = Blueprint('file_uploading', __name__)
+file_retrieving_blueprint = Blueprint('file_retrieving', __name__)
 
 
 @file_uploading_blueprint.route('/upload', methods=['POST'])
@@ -44,7 +45,6 @@ def upload_file():
             }
 
             with Session(engine) as db_session:
-
                 file_entity = File(
                     name=file_response_dict['filename'],
                     open_ai_id=file_response_dict['id'],
@@ -60,3 +60,26 @@ def upload_file():
     except Exception as e:
         logging.error(f"Error: {e}")
         return jsonify({'error': str(e)}), 500
+
+
+@file_retrieving_blueprint.route('/retrieve', methods=['GET'])
+def retrieve_file():
+    user_id = request.headers.get('User-Id')
+    if user_id is None:
+        return jsonify({'error': 'You should first log in in order to retrieve files'}), 401
+
+    with Session(engine) as db_session:
+        user = db_session.query(User).get(user_id)
+        if user is None:
+            return jsonify({'error': 'User not found'}), 401
+
+        files_data = [
+            {
+                "id": file.id,
+                "name": file.name,
+                "status": file.status,
+                "open_ai_id": file.open_ai_id
+            } for file in user.files
+        ]
+
+        return jsonify({'data': files_data})
