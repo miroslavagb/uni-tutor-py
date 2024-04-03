@@ -2,7 +2,8 @@ import json
 import os
 
 from flask import Blueprint, jsonify, request
-from db.db_models import Question, Option, engine
+from db.db_models import Question, Option, engine, User
+
 from sqlalchemy.orm import Session
 
 from open_ai.service_facade import OpenAIServiceFacade
@@ -15,10 +16,26 @@ openai_facade = OpenAIServiceFacade()
 
 @test_evaluation_blueprint.route('/evaluate', methods=['POST'])
 def evaluate_test():
+    user_id = request.headers.get('User-Id')
+    file_id = request.headers.get('File-Id')
+
+    if user_id is None:
+        return jsonify({'error': 'You should first log in in order to upload a file'}), 401
+    if file_id is None:
+        return jsonify({'error': 'You should select a file for asking questions'}), 400
+
     user_answers = request.json.get(
         'answers')  # TODO {"answers": [{"question_id": "..", "option_id": ".."}, ...]}
 
     with Session(engine) as session:
+        user = session.query(User).get(user_id)
+        if user is None:
+            return jsonify({'error': 'User not found'}), 401
+
+        file = next((f for f in user.files if str(f.id) == file_id), None)
+        if file is None:
+            return jsonify({'error': 'File not found or access denied'}), 403
+        
         evaluation_response = []
 
         for answer in user_answers:
@@ -37,7 +54,7 @@ def evaluate_test():
             })
 
     evaluation_response_json = json.dumps({"evaluation_response": evaluation_response})
-    answer = openai_facade.execute_run(content=evaluation_response_json, assistant_id=EVALUATING_ASSISTANT)
+    answer = openai_facade.execute_run(content=evaluation_response_json, file_ids=[file.open_ai_id], assistant_id=EVALUATING_ASSISTANT)
     serialized_answer = serialize_thread_messages(answer)[0]
 
     return jsonify({"evaluation_response": serialized_answer})

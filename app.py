@@ -34,4 +34,6 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     app = create_app()
     initiate_database()
+
+    app.config['SECRET_KEY'] = 'secret'
     app.run(debug=True)

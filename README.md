@@ -8,15 +8,25 @@ In order to run this project, you should have a stable internet connection, as i
 * OpenAI platform account (API key)
 
 ## Set up
+1. If needed - install PostgreSQL, and create new empty database.
+1. Clone the github repo and `cd` in its directory.
 1. Create `app_variables.env` file inside the root directory. It's added in .gitignore, so it would only be visible on your machine.
-2. The structure of the file should look like this:
-```env
-OPENAI_API_KEY=<YOUR-OPENAI-API-KEY>
-QUESTION_GENERATING_ASSISTANT=<OPENAI-ASSISTANT-ID>
-QUESTION_ANSWERING_ASSISTANT=<OPENAI-ASSISTANT-ID>
-EVALUATING_ASSISTANT=<OPENAI-ASSISTANT-ID>
-DATABASE_URL=postgresql://<DB-USER>:<DB-PASS>@localhost:5432/<DB-NAME>
-```
+1. The structure of the `app_variables.env` file should look like this:
+    ```env
+    OPENAI_API_KEY=<YOUR-OPENAI-API-KEY>
+    QUESTION_GENERATING_ASSISTANT=<OPENAI-ASSISTANT-ID>
+    QUESTION_ANSWERING_ASSISTANT=<OPENAI-ASSISTANT-ID>
+    EVALUATING_ASSISTANT=<OPENAI-ASSISTANT-ID>
+    DATABASE_URL=postgresql://<DB-USER>:<DB-PASS>@localhost:5432/<DB-NAME>
+    ```
+1. Go to `https://platform.openai.com/assistants` and create the asistants. For instructions copy-paste from below (Section OpenAI Assistants).
+1. (Optional) Create new python environment: `python -m venv env`
+1. (Optional) Activate the new environment: `source env/bin/activate`
+1. Install the required packages: `pip install -r requirements.txt`
+1. Run the app: `python app.py`
+
+## Testing the API
+You can import the `example.postman_collection.json` file in PostMan. There are examples of all the API calls. Keep in mind that some adjustments may be needed depending on your local instalation and data. E.g. the header `User-Id` might be different. The header `File-Id` will be different. In the file_upload request, you need to provide your own file. Etc.
 
 ## OpenAI Assistants
 For the purpose of the project, three OpenAI assistants were created:
