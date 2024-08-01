@@ -37,7 +37,7 @@ ehthumbs.db
 Thumbs.db
 
 # My custom
-env
+.env
 *.env
 __pycache__/
 .idea/
