@@ -45,16 +45,13 @@ def serialize_thread_messages(sync_cursor_page):
 
 
 def parse_generated_questions(response_json):
-    global cleaned_json_str
     generated_questions_data = []
     for item in response_json:
         if 'content' in item:
             try:
-                # Remove Markdown code block syntax and newlines
+                # Check if content is JSON
                 cleaned_json_str = item['content']
-                cleaned_json_str = cleaned_json_str.replace('```json\n', '').replace('\n```', '').replace('\\n',
-                                                                                                          '').replace(
-                    "\\'", "'").replace('\\"', '"')
+                cleaned_json_str = cleaned_json_str.replace('```json\n', '').replace('\n```', '').replace('\\n', '').replace("\\'", "'").replace('\\"', '"')
                 logging.info(f"Attempting to parse JSON: {cleaned_json_str}")
                 parsed_data = json.loads(cleaned_json_str)
 
