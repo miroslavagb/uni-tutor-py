@@ -10,9 +10,10 @@ question_answering_blueprint = Blueprint('question_answering', __name__)
 messages_history_blueprint = Blueprint('messages_history', __name__)
 
 @question_answering_blueprint.route('/answer', methods=['POST'])
+@jwt_required()  
 def answer_question():
     try:
-        user_id = request.headers.get('User-Id')
+        user_id = get_jwt_identity()
         file_id = request.headers.get('File-Id')
 
         if not user_id:
@@ -20,7 +21,6 @@ def answer_question():
         if not file_id:
             return jsonify({'error': 'You should select a file for asking questions'}), 400
 
-        #  in JSON format
         question_data = request.get_json()
         if not question_data or 'question' not in question_data:
             return jsonify({'error': 'No question provided'}), 400
@@ -39,7 +39,8 @@ def answer_question():
 
             try:
                 logging.info(f"Received question for file: '{file.name}'. Question: {question}")
-                answer = question_answering_service.answer_question(question, file.open_ai_id)
+
+                answer = question_answering_service.answer_question(question, [file.open_ai_id])
 
                 message = MessagesHistory(
                     question=question,
