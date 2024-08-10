@@ -8,7 +8,7 @@ login_blueprint = Blueprint('login', __name__)
 logout_blueprint = Blueprint('logout', __name__)
 protected_blueprint = Blueprint('protected', __name__)
 
-
+# test
 @registration_blueprint.route('/registration', methods=['POST'])
 def register():
     email = request.form.get('email')
