@@ -1,41 +1,41 @@
 import json
 import os
-
 from flask import Blueprint, jsonify, request
-from db.db_models import Question, Option, engine, User
-
 from sqlalchemy.orm import Session
-
+from db.db_models import Question, Option, User, engine, File  
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from open_ai.service_facade import OpenAIServiceFacade
+import logging
 
 test_evaluation_blueprint = Blueprint('test_evaluation', __name__)
-
 EVALUATING_ASSISTANT = os.getenv('EVALUATING_ASSISTANT')
 openai_facade = OpenAIServiceFacade()
 
-
 @test_evaluation_blueprint.route('/evaluate', methods=['POST'])
+@jwt_required()
 def evaluate_test():
-    user_id = request.headers.get('User-Id')
-    file_id = request.headers.get('File-Id')
+    user_id = get_jwt_identity()
+    file_id = request.headers.get('File-ID')  
 
-    if user_id is None:
-        return jsonify({'error': 'You should first log in in order to upload a file'}), 401
-    if file_id is None:
-        return jsonify({'error': 'You should select a file for asking questions'}), 400
-
-    user_answers = request.json.get(
-        'answers')  # TODO {"answers": [{"question_id": "..", "option_id": ".."}, ...]}
+    if not user_id:
+        return jsonify({'error': 'Authentication required'}), 401
+    if not file_id:
+        return jsonify({'error': 'File ID is required for evaluation'}), 400
 
     with Session(engine) as session:
         user = session.query(User).get(user_id)
-        if user is None:
-            return jsonify({'error': 'User not found'}), 401
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
 
-        file = next((f for f in user.files if str(f.id) == file_id), None)
-        if file is None:
+        logging.debug(f"User ID: {user_id}, File ID: {file_id}")
+        logging.debug(f"Files available for user: {[f.open_ai_id for f in user.files]}")
+
+    
+        file = next((f for f in user.files if f.open_ai_id == file_id), None)
+        if not file:
             return jsonify({'error': 'File not found or access denied'}), 403
-        
+
+        user_answers = request.json.get('userAnswers', [])
         evaluation_response = []
 
         for answer in user_answers:
@@ -53,19 +53,19 @@ def evaluate_test():
                 "correct_option": serialize_option(correct_option)
             })
 
-    evaluation_response_json = json.dumps({"evaluation_response": evaluation_response})
-    answer = openai_facade.execute_run(content=evaluation_response_json, file_ids=[file.open_ai_id], assistant_id=EVALUATING_ASSISTANT)
-    serialized_answer = serialize_thread_messages(answer)[0]
+        evaluation_response_json = json.dumps({"evaluation_response": evaluation_response})
+        answer = openai_facade.execute_run(content=evaluation_response_json, file_ids=[file.open_ai_id], assistant_id=EVALUATING_ASSISTANT)
+        serialized_answer = serialize_thread_messages(answer)[0]
 
-    return jsonify({"evaluation_response": serialized_answer})
-
+        return jsonify({"evaluation_response": serialized_answer})
 
 def serialize_option(option):
+    if not option:
+        return None
     return {
         "key": option.key,
         "value": option.value,
     }
-
 
 def serialize_thread_messages(sync_cursor_page):
     serialized_data = []
@@ -78,7 +78,6 @@ def serialize_thread_messages(sync_cursor_page):
         message_info = {
             'id': thread_message.id,
             'content': concatenated_values.strip(),
-            # TODO: Add other fields as needed
         }
         serialized_data.append(message_info)
 

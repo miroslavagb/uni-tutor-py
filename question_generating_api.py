@@ -1,13 +1,17 @@
 import logging
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required, get_jwt_identity
 import question_generating_service
 
 question_generating_blueprint = Blueprint('question_generating', __name__)
 
 @question_generating_blueprint.route('/generate/<int:question_count>', methods=['POST'])
+@jwt_required()  
 def generate_questions(question_count):
     try:
-        file_ids = request.json.get('file_ids', [])  # Expect file_ids in JSON payload
+        user_id = get_jwt_identity()
+
+        file_ids = request.json.get('file_ids', [])
         additional_prompt = request.json.get('prompt', '')
         question_theme = request.json.get('theme', '')
 
