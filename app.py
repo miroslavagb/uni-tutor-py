@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify
 load_dotenv(dotenv_path='app_variables.env', verbose=True)
 from db.db_models import initiate_database
-from file_uploading_api import file_uploading_blueprint, file_retrieving_blueprint
+from file_uploading_api import file_uploading_blueprint, file_retrieving_blueprint, file_listing_blueprint 
 from question_answering_api import question_answering_blueprint, messages_history_blueprint
 from question_generating_api import question_generating_blueprint
 from test_evaluation import test_evaluation_blueprint
@@ -27,6 +27,8 @@ def create_app():
     flask_app.register_blueprint(messages_history_blueprint)
     flask_app.register_blueprint(file_retrieving_blueprint)
     flask_app.register_blueprint(protected_blueprint)
+    flask_app.register_blueprint(file_listing_blueprint)
+
 
 
     CORS(flask_app)

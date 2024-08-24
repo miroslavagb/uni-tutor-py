@@ -9,6 +9,8 @@ from open_ai.service import OpenAIService
 openai_service = OpenAIService()
 file_uploading_blueprint = Blueprint('file_uploading', __name__)
 file_retrieving_blueprint = Blueprint('file_retrieving', __name__)
+file_listing_blueprint = Blueprint('file_listing', __name__)
+
 
 @file_uploading_blueprint.route('/upload', methods=['POST'])
 @jwt_required()
@@ -68,3 +70,20 @@ def retrieve_file():
         } for file in user.files]
 
         return jsonify({'files': files}), 200  #DB list of files with userid
+    
+@file_listing_blueprint.route('/files', methods=['GET'])
+@jwt_required()
+def get_uploaded_files():
+    user_id = get_jwt_identity()
+    with Session(engine) as session:
+        user = session.query(User).get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        files = [{
+            "id": file.id,
+            "name": file.name,
+            "open_ai_id": file.open_ai_id
+        } for file in user.files]
+
+        return jsonify({'files': files}), 200
